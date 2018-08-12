@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -34,29 +35,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
   private    void  getMovie(){
-//    RestAdapter restAdapter = new RestAdapter.Builder()
-//            .setEndpoint("http://api.themoviedb.org/3")
-//            .setRequestInterceptor(new RequestInterceptor() {
-//                @Override
-//                public void intercept(RequestFacade request) {
-//                    request.addEncodedQueryParam("api_key", "eb37bafc5fe27ad9ab86a74e72812c06");
-//                }
-//            })
-//            .setLogLevel(RestAdapter.LogLevel.FULL)
-//            .build();
+
 
     MoviesApiService moviesApiService=retrofitApi.getClient().create(MoviesApiService.class);
-    //интерфейс реализован с помощию класса Refrofit  с базовым URL b конвертором
-//      MoviesApiService service = restAdapter.create(MoviesApiService.class);
-      Call<List<Movie>> call=moviesApiService.getPopularMovies("eb37bafc5fe27ad9ab86a74e72812c06");
-      call.enqueue(new Callback<List<Movie>>() {
+    //интерфейс реализован с помощию класса Refrofit  с базовым URL и конвертором
+
+      Call<ResponseModel> call=moviesApiService.getPopularMovies("eb37bafc5fe27ad9ab86a74e72812c06");
+      call.enqueue(new Callback<ResponseModel>() {
           @Override
-          public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
-              movieAdapter.setMovieList(response.body());
+          public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+             List<Movie> listmovie=new ArrayList<>();
+             listmovie.addAll(response.body().getResults());
+             System.out.println(listmovie);
+              movieAdapter.setMovieList(listmovie);
           }
 
           @Override
-          public void onFailure(Call<List<Movie>> call, Throwable t) {
+          public void onFailure(Call<ResponseModel> call, Throwable t) {
 
           }
       });
